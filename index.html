@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>CORS</h1>
+
+    <h3>Request</h3>
+
+    <input id="txtUrlRequest" type="text" value="https://localhost:7200/WeatherForecast">
+
+    <button id="btnRequest">Send</button>
+
+    <h3>Response</h3>
+
+    <pre>
+        <code>
+            <div id="contenidoResponse"></div>
+        </code>
+    </pre>
+</body>
+
+<script>
+    let contenidoResponse = document.getElementById("contenidoResponse")
+    let urlRequest = document.getElementById("txtUrlRequest")
+
+    let btnRequest = document.getElementById("btnRequest")
+
+    btnRequest.addEventListener("click", () => {
+
+        console.log(urlRequest.value)
+
+        fetch(urlRequest.value, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                contenidoResponse.style.color = "#0000FF";
+                contenidoResponse.innerHTML = JSON.stringify(data, null, 4)
+                console.log(data);
+            })
+            .catch(error => {
+                contenidoResponse.style.color = "#FF0000";
+                contenidoResponse.innerHTML = JSON.stringify(error, null, 4)
+                console.log(error);
+            })
+    })
+</script>
+
+</html>
