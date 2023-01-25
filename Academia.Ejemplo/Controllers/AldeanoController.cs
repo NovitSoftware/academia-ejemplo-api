@@ -1,4 +1,5 @@
 ﻿using Academia.Ejemplo.Models;
+using Academia.Ejemplo.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,10 +10,19 @@ namespace Academia.Ejemplo.Controllers;
 [ApiController]
 public class AldeanoController : ControllerBase
 {
+    private readonly AplicacionDbContext context;
+
+    public AldeanoController(AplicacionDbContext context)
+    {
+        this.context = context;
+    }
+
     [HttpGet]
     public ActionResult GetCostos()
     {
-        return Ok();
+        var aldeanos = context.Aldeano.ToList();
+
+        return Ok(aldeanos);
     }
 
     [HttpGet]
@@ -28,7 +38,7 @@ public class AldeanoController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Construir(Edificio edificio)
+    public ActionResult Construir() 
     {
         return Ok();
     }

@@ -1,35 +1,44 @@
-﻿using Academia.Ejemplo.Models;
+﻿using Academia.Ejemplo.ConfigurationModels;
+using Academia.Ejemplo.Models;
+using Academia.Ejemplo.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Academia.Ejemplo.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [ApiController]
 public class EdificioController : ControllerBase
 {
-    // GET: api/<EdificioController>
+    private readonly IConfiguration configuration;
+
+    public EdificioController(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
+
     [HttpGet]
-    public ActionResult Get()
+    public ActionResult GetCostos()
     {
-        return Ok();
+        var costoEdificio = configuration.GetSection("CostoEdificio").Get<List<RecursoEdificio>>();
+
+        return Ok(costoEdificio);
     }
 
-    // POST api/<EdificioController>
     [HttpPost]
-    public ActionResult Post([FromBody] Edificio edificio)
+    public ActionResult CrearAldeano(int idJugador, Aldeano aldeano)
     {
         return Ok();
     }
 
-    // PUT api/<EdificioController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    [HttpPut("{idEdificio}")]
+    public ActionResult Mejorar(int idEdificio)
     {
+        return Ok();
     }
 
-    // DELETE api/<EdificioController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public ActionResult Delete(int idEdificio)
     {
+        return NoContent();
     }
 }
