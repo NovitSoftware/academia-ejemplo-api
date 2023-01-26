@@ -1,5 +1,4 @@
 ﻿using Academia.Ejemplo.ConfigurationModels;
-using Academia.Ejemplo.Models;
 using Academia.Ejemplo.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
