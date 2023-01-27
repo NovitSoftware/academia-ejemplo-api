@@ -60,7 +60,7 @@ El archivo **appsettings.json** debería quedar:
 - Con el comando se procede a realizar el scaffold (completar con las credenciales correspondientes)
 
 ```
-dotnet ef dbcontext scaffold "Server=IP_SERVIDOR_DB;Database=NOMBRE_BD;User=USUARIO;Password=CONTRASEÑA" Microsoft.EntityFrameworkCore.SqlServer --output-dir Persistence --force --context AplicacionDbContext
+dotnet ef dbcontext scaffold "Server=IP_SERVIDOR_DB;Database=NOMBRE_BD;User=USUARIO;Password=CONTRASEÑA" Microsoft.EntityFrameworkCore.SqlServer --output-dir Persistence --force --context AplicacionDbContext --no-pluralize
 ```
 
 
