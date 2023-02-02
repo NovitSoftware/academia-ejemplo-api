@@ -1,5 +1,7 @@
 ﻿using Academia.Ejemplo.DTO;
 using Academia.Ejemplo.Persistence;
+using Academia.Ejemplo.Persistence.Repositories;
+using Academia.Ejemplo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,52 +12,63 @@ namespace Academia.Ejemplo.Controllers;
 public class JugadorController : ControllerBase
 {
     private readonly AplicacionDbContext context;
+    private readonly JugadorRepository jugadorRepository;
+    private readonly EdificioRepository edificioRepository;
+    private readonly JugadorService jugadorService;
 
-    public JugadorController(AplicacionDbContext context)
+    public JugadorController(AplicacionDbContext context, 
+        JugadorRepository jugadorRepository, 
+        EdificioRepository edificioRepository, 
+        JugadorService jugadorService)
     {
         this.context = context;
+        this.jugadorRepository = jugadorRepository;
+        this.edificioRepository = edificioRepository;
+        this.jugadorService = jugadorService;
     }
 
     [HttpGet]
     public ActionResult GetJugadores()
     {
-        var jugadores = context.Jugador.Include(x => x.IdAldeano).Include(x => x.IdMilitar).Include(x => x.IdEdificio);
+        //var jugadores = context.Jugador.Include(x => x.IdAldeano).Include(x => x.IdMilitar).Include(x => x.IdEdificio);
+        var jugadores = jugadorService.GetJugadores();
 
-        return Ok(jugadores.Select(j =>
-            new {
-                j.IdJugador,
-                j.Nombre, 
-                j.Civilizacion, 
-                j.Puntaje, 
-                j.Poblacion, 
-                j.Oro, 
-                j.Piedra, 
-                j.Madera, 
-                j.Comida, 
-                aldeanos = j.IdAldeano.Select(a => 
-                    new {
-                        a.IdAldeano,
-                        a.Nombre,
-                        a.Categoria,
-                        a.PuntosAtaque,
-                        a.PuntosVida
-                    }),
-                militares = j.IdMilitar.Select(m =>
-                    new {
-                        m.IdMilitar,
-                        m.Nombre,
-                        m.Categoria,
-                        m.PuntosAtaque,
-                        m.PuntosVida
-                    }),
-                edificios = j.IdEdificio.Select(e =>
-                new {
-                    e.IdEdificio,
-                    e.Nombre,
-                    e.PuntosAtaque,
-                    e.PuntosVida
-                }),
-            }));
+        return Ok(jugadores);
+        //return Ok(jugadores.Select(j =>
+        //    new {
+        //        j.IdJugador,
+        //        j.Nombre, 
+        //        j.Civilizacion, 
+        //        j.Puntaje, 
+        //        j.Poblacion, 
+        //        j.Oro, 
+        //        j.Piedra, 
+        //        j.Madera, 
+        //        j.Comida, 
+        //        aldeanos = j.IdAldeano.Select(a => 
+        //            new {
+        //                a.IdAldeano,
+        //                a.Nombre,
+        //                a.Categoria,
+        //                a.PuntosAtaque,
+        //                a.PuntosVida
+        //            }),
+        //        militares = j.IdMilitar.Select(m =>
+        //            new {
+        //                m.IdMilitar,
+        //                m.Nombre,
+        //                m.Categoria,
+        //                m.PuntosAtaque,
+        //                m.PuntosVida
+        //            }),
+        //        edificios = j.IdEdificio.Select(e =>
+        //        new {
+        //            e.IdEdificio,
+        //            e.Nombre,
+        //            e.PuntosAtaque,
+        //            e.PuntosVida
+        //        }),
+        //    }));
     }
 
     [HttpPost]
@@ -64,7 +77,7 @@ public class JugadorController : ControllerBase
         var jugador = new Jugador()
         {
             Nombre = jugadorDto.Nombre,
-            Puntaje = jugadorDto.Puntaje,
+            Puntaje =  jugadorDto.Puntaje,
             Poblacion = jugadorDto.Poblacion,
             Civilizacion = jugadorDto.Civilizacion,
             Madera = jugadorDto.Madera,
@@ -98,14 +111,24 @@ public class JugadorController : ControllerBase
             PuntosAtaque = edificioDto.PuntosAtaque,
             PuntosVida = edificioDto.PuntosVida
         };
-        
-        var jugador = context.Jugador.First(x => x.IdJugador == idJugador);
 
-        jugador.IdEdificio.Add(edificio);
+        try
+        {
+            var jugador = jugadorRepository.Find(idJugador);
 
-        context.SaveChanges();
+            if (jugador == null)
+                return StatusCode(400, $"No exite jugador con el Id: {idJugador}");
 
-        return Ok(jugador.IdJugador);
+            edificioRepository.AddEdificioToJugador(edificio, jugador);
+
+            context.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Hubo un error interno");        
+        }
+
+        return Ok(idJugador);
     }
 
     /// <summary>

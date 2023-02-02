@@ -1,4 +1,6 @@
 using Academia.Ejemplo.Persistence;
+using Academia.Ejemplo.Persistence.Repositories;
+using Academia.Ejemplo.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,13 @@ string connectionString = builder.Configuration.GetConnectionString("AcademiaEje
 builder.Services.AddDbContext<AplicacionDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<DbContext, AplicacionDbContext>();
+
+builder.Services.AddTransient<JugadorRepository>();
+builder.Services.AddTransient<AldeanoRepository>();
+builder.Services.AddTransient<EdificioRepository>();
+
+builder.Services.AddTransient<JugadorService>();
+builder.Services.AddTransient<AldeanoService>();
 
 var app = builder.Build();
 
