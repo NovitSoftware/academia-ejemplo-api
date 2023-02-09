@@ -1,6 +1,8 @@
+using Academia.Ejemplo.Middleware;
 using Academia.Ejemplo.Persistence;
 using Academia.Ejemplo.Persistence.Repositories;
 using Academia.Ejemplo.Services;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,5 +49,19 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//app.Use(async (context, next) =>
+//{
+//    app.Logger.LogInformation($"Method: {context.Request.Method}, URL: {context.Request.GetDisplayUrl()}");
+//    await next.Invoke();
+//    app.Logger.LogInformation($"Status code: {context.Response.StatusCode}, Content-Type: {context.Response.ContentType}");
+//});
+
+//app.UseMiddleware<LoggerJuegoMiddleware>();
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/Edificio"), appBuilder =>
+{
+    appBuilder.UseMiddleware<LoggerJuegoMiddleware>();
+});
 
 app.Run();
